@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="app" v-cloak>
+    <h2>{{count}}</h2>
+    <h2 v-text="count"></h2>
+    <h2 v-html="count"></h2>
+    <h2 v-pre>下午学习了插值表达式 - {{1+1}}</h2>
+  </div>  
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.prod.min.js"></script> -->
+
+  <script>
+    /*
+      vue中指令：
+        v-text指令：与{{}}是等价的，不会进行标签的解析
+        v-html指令：会进行标签的解析
+        v-cloak指令：用于隐藏尚未完成的编译的dom模板，配合css样式去实现
+        v-pre指令：跳过该元素及其所有子元素的编译
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          count:'<span>0</span>'
+        }
+      }
+    })
+    app.mount('#app')
+
+
+    
+  </script>
+</body>
+</html>

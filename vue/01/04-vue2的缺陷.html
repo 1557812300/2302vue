@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2 @click="changeCount">count -- {{count}}</h2>
+    <h2 @click="changeUser">{{user}}</h2>
+  </div>
+
+  <!--引入vue.js-v2版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script>
+
+  <script>
+    /*
+      测试vue2的缺陷！
+      因为在vue2中，通过Object.defineProperty进行对象的属性拦截处理，动态添加get/set方法。
+      给对象动态添加新的属性、删除属性都是拦截不到的，所以界面不会更新。
+      
+      在vue2中，如果给对象动态添加新的属性，会发现数据改变了，但是界面是不会更新的。
+    */
+    new Vue({
+      el:'#app',
+      data:{
+        count:1,
+        user:{
+          username:'张三'
+        }
+      },
+      methods:{
+        changeCount(){
+          this.count = 10
+        },
+        changeUser(){
+          // this.user.username += '!'
+          // 需要再目前user对象的基础上，添加新的属性age
+          // this.user.age = 18
+
+          // 希望给对象添加新的属性，并且是响应式的话，需要借助全局api Vue.set
+          // Vue.set(this.user,'age',18)
+          // console.log(this.user)
+
+          // 删除对象的属性
+          // delete this.user.username
+          // Vue.delete(this.user,'username')
+        }
+      }
+    })
+  </script>
+</body>
+</html>

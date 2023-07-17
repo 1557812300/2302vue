@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <!-- <h2 @click="changeCount">count -- {{count}}</h2>
+    <h2 @click="changeUser">{{user}}</h2> -->
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    /*
+      
+    */
+    // const {createApp} = Vue
+    // const app = createApp({
+    //   data(){
+    //     return {
+    //       count:0,
+    //       user:{
+    //         username:'张三'
+    //       }
+    //     }
+    //   },
+    //   methods:{
+    //     changeCount(){
+    //       this.count++
+    //     },
+    //     changeUser(){
+    //       // this.user.username += '!'
+    //       // this.user.age = 18
+    //       // delete this.user.username
+    //     }
+    //   }
+    // })
+    // app.mount('#app')
+
+
+    /*
+      vue3的底层原理实现：
+    */
+   const target = {
+    a:'aaa',
+    b:'bbb'
+   }
+   const proxy = new Proxy(target,{
+    get(target,key,receiver){
+      // console.log('get方法执行了哦...',target,key,receiver)
+      return Reflect.get(target,key,receiver)
+    },
+    set(target,key,value,receiver){
+      // console.log('set方法执行了哦...',target,key,value,receiver)
+      Reflect.set(target,key,value,receiver)
+      // 更新视图界面的方法
+    },
+    deleteProperty(target,key){
+      console.log('deleteProperty执行了哦...',target,key)
+      Reflect.deleteProperty(target,key)
+    }
+   })
+   delete proxy.a
+   console.log(proxy)
+  </script>
+</body>
+</html>

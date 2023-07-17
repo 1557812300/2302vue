@@ -10,11 +10,43 @@
   <div id="app">
   </div>
 
-   <!--引入vue.js-v2版本线上cdn链接-->
-   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script>
+  <!--引入vue.js-v2版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script>
 
   <script>
-    
+    /*
+      为什么model层数据更改了，viewModal内部知道数据发生变化了？
+      vue2的双向数据绑定的底层原理？
+
+      vue在创建vm的时候，会将数据配置到vue的实例中，内部借助了Object.defineProperty进行了数据的劫持处理
+      当我们获取数据的时候，会触发get方法
+      当我们修改数据的时候，会触发对应的set方法，当数据修改完毕后，内部进一步触发watch，进行虚拟dom对比，最后更新真实dom。
+    */
+    // {{count}}   1 --> 10
+    // let json = {count:1}
+    // const vm = new Vue({
+    //   el:'#app',
+    //   data:json
+    // })
+    // console.log(json)
+
+    let json = {}
+    let middle = 1
+    Object.defineProperty(json,'count',{
+      get(){
+        // console.log('get方法执行了哦...')
+        return middle
+      },
+      set(val){
+        // console.log('set方法执行了o....',val)
+        // json.count = val
+        middle = val
+      }
+    })
+    // console.log(json.count) // 获取对象的count属性的时候，就会触发对象内部的get方法
+    // json.count = 10         // 修改对象的count属性的时候，就会触发对象内部的set方法
+    // console.log(json.count)
+    console.log(json)
   </script>
 </body>
 </html>

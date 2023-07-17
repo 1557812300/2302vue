@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+    ul{
+      padding: 20px;
+      background: pink;
+    }
+    li{
+      padding: 5px;
+      background: red;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="app" v-cloak>
+    <button @click.once="count++">点击--{{count}}</button>
+    <ul @click.self="clickUl">
+      <li @click="clcikLi(1,$event)">li.....</li>
+    </ul>
+    <a href="http://www.baidu.com" @click.prevent="clickme">点我</a>
+
+    <input type="text" @keyup.enter="up">
+  </div>  
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      vue中指令：
+        vue中通过v-on:click绑定了点击事件  简写为@click
+        vue中可以通过$event传递事件对象
+
+      事件修饰符：
+        @click.stop 阻止事件冒泡
+        @click.self 仅当 event.target 是元素本身时才会触发事件处理器
+        @click.once 触发一次
+        @click.prevent 取消默认行为
+
+      键盘事件修饰符：
+        @keyup.enter  敲击键盘回车键的时候触发
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          count:1
+        }
+      },
+      methods:{
+        up(e){
+          console.log(e.target.value)
+        },
+        clickme(){alert(1)},
+        clickUl(){
+          console.log('ul被点击了哦...')
+        },
+        clcikLi(params,e){
+          console.log('li被点击了哦...',params,e)
+          // e.stopPropagation() //阻止事件冒泡
+        }
+      }
+    })
+    app.mount('#app')
+
+
+    
+  </script>
+</body>
+</html>

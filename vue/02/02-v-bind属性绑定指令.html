@@ -13,14 +13,11 @@
 <body>
   
   <div id="app" v-cloak>
-    <h2>{{count}}</h2>
-    <h2 v-text="count"></h2>
-    <h2 v-html="count"></h2>
-    <h2 v-pre>下午学习了插值表达式 - {{1+1}}</h2>
+    <h2 v-bind:msg="id">我是h2</h2>
+    <img :src="imgSrc" alt="">
   </div>  
 
   <!--引入vue.js-v3版本线上cdn链接-->
-  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.prod.min.js"></script>
 
   <script>
@@ -30,12 +27,14 @@
         v-html指令：会进行标签的解析
         v-cloak指令：用于隐藏尚未完成的编译的dom模板，配合css样式去实现
         v-pre指令：跳过该元素及其所有子元素的编译
+        v-bind指令：进行属性绑定，可以简写成:
     */
     const {createApp} = Vue
     const app = createApp({
       data(){
         return {
-          count:'<span>0</span>'
+          id:'hello',
+          imgSrc:'https://gimg3.baidu.com/search/src=http%3A%2F%2Fpics1.baidu.com%2Ffeed%2F5fdf8db1cb134954dc4e74f1f084ee54d0094a2e.jpeg%40f_auto%3Ftoken%3Dc431ccf41b654b5b8040cd6d3c6a487b&refer=http%3A%2F%2Fwww.baidu.com&app=2021&size=f360,240&n=0&g=0n&q=75&fmt=auto?sec=1689699600&t=3665580930061996fb33d00fdb24fd6a'
         }
       }
     })

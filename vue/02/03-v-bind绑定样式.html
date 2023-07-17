@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+    .red{
+      color:red;
+    }
+    .big{
+      font-size: 30px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="app" v-cloak>
+    <button @click="flag=!flag">更改</button>
+    <div :class="{red:flag}">我是div元素</div>
+    <div :class=" flag?'red':'' ">我是div元素</div>
+    <hr/>
+    <div class="big" :class="{red:flag}">我是div元素</div>
+    <div :class="{red:flag,big:true}">我是div元素</div>
+    <div :class="['big',flag?'red':'']">我是div元素</div>
+    <hr/>
+    <div :style="{color:flag?'red':''}">我是div元素</div>
+    <div :style="styleObj" @click="styleObj.fontSize='30px'">我是div元素</div>
+  </div>  
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.prod.min.js"></script> -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      vue中指令：
+        v-bind指令：进行属性绑定，可以简写成:
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          flag:true,
+          styleObj:{
+            background:'yellow'
+          }
+        }
+      }
+    })
+    app.mount('#app')
+
+
+    
+  </script>
+</body>
+</html>

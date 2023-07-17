@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="app" v-cloak>
+    <button @click="flag=!flag">更改flag</button>
+    <div v-if="flag">我是if。。。。</div>
+    <div v-else>我是else</div>
+    <hr/>
+
+    <!--template标签不会渲染成额外的标签-->
+    <template v-if="flag">
+      <span>111</span>
+      <span>222</span>
+    </template>
+
+    <ul>
+      <template v-if="flag">
+        <li>li--111</li>
+        <li>li---2222</li>
+      </template>
+      <li>li---333</li>
+    </ul>
+
+
+    <!--多个条件判断-->
+    <button @click="type='A'">A</button>
+    <button @click="type='B'">B</button>
+    <button @click="type='C'">C</button>
+    <div v-if="type === 'A'">
+      A
+    </div>
+    <div v-else-if="type === 'B'">
+      B
+    </div>
+    <div v-else-if="type === 'C'">
+      C
+    </div>
+    <div v-else>
+      Not A/B/C
+    </div>
+
+  </div>  
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      vue中指令：
+        v-if vs v-show 区别？
+        v-if是元素的卸载与重新装载的过程，v-show是设置css属性display:none|block
+        v-if可以与v-else指令搭配使用
+        v-if可以与template标签搭配使用，而v-show不行
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          flag:true,
+          type:'B'
+        }
+      },
+      
+    })
+    app.mount('#app')
+
+
+    
+  </script>
+</body>
+</html>

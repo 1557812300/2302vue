@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <!-- <ul>
+      <li>{{arr[0].name}}</li>
+      <li>{{arr[1].name}}</li>
+      <li>{{arr[2].name}}</li>
+    </ul> -->
+    <!-- <ul>
+      <li v-for="item,index in arr">{{index+1}}-{{item.name}}</li>
+    </ul> -->
+    <!-- <h2>{{user.name}} -- {{user.age}}</h2> -->
+    <!-- <h2 v-for="(value,key,index) in user">{{index+1}}.{{key}}-{{value}}</h2> -->
+
+    <!-- vue3中，如果v-for与v-if指令用在同一个标签上面，v-if优先级更高 -->
+    <div v-for="item in arr">
+      <p v-if="item.name!=='橘子'">{{item.name}}</p>
+    </div>
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      v-for指令可以用来遍历数组 | 对象
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          arr:[
+            {name:'橘子'},
+            {name:'苹果'},
+            {name:'香蕉'},
+          ],
+          user:{
+            name:'张三',
+            age:18
+          }
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

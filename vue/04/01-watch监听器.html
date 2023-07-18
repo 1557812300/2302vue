@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2>{{num}}</h2>
+    <button @click="num++">点击num</button>
+    <input type="text" v-model="firstName">
+    <input type="text" v-model="lastName">
+    <h2>{{fullName}}</h2>
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      watch可以监听现有的数据的变化，当数据改变了，做一些业务逻辑操作。
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          num:1,
+          firstName:'zhang',
+          lastName:'san',
+          fullName:''
+        }
+      },
+      computed:{
+        computedName(){
+          return this.firstName+this.lastName
+        }
+      },
+      watch:{
+        num(newValue,oldValue){ // 当数据改变了，如果内部希望做异步操作的时候，可以采用watch实现
+          setTimeout(() => {
+            console.log(newValue,oldValue)
+          }, 2000);
+        },
+        firstName(newValue){
+          this.fullName = newValue + this.lastName
+        },
+        lastName(newValue){
+          this.fullName = this.firstName + newValue
+        }
+      },
+      methods:{
+       
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

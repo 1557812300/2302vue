@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2>{{computedCount}}</h2>
+    <input type="text" v-model="count">
+    <hr/>
+    <input type="text" v-model="firstName"/>
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      千万不要在模板中调用方法！因为如果用到了其他的数据，当其他的数据改变的时候，就会让模板进行更新，
+      每更新一次，方法就会触发一次，效率太差了，影响性能。
+
+      computed计算属性解决
+        计算属性内部只会跟它的依赖的数据建立缓存关系，只有当count改变了，才会重新计算。
+        如果依赖的数据count没有发生改变的话，就不会重新计算了，从上一次的缓存中取值使用。  
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          firstName:'',
+          count:1
+        }
+      },
+      computed:{
+        computedCount(){
+          console.log('computedCount--->')
+          return this.count * 2
+        }
+      },
+      methods:{
+        doubleCount(){
+          console.log('doubleCount--->')
+          return this.count * 2
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

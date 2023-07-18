@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2>{{fullName}}</h2>
+    <button @click="change">修改计算属性</button>
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          firstName:'张',
+          lastName:'三'
+        }
+      },
+      computed:{
+        // fullName(){ // 默认就是走了get,只是界面读取内容而已，不能修改
+        //   return this.firstName +' '+this.lastName
+        // }
+        fullName:{
+          get() {
+            return this.firstName + ' ' + this.lastName
+          },
+          set(value){
+            // this.firstName = value.split(' ')[0]
+            // this.lastName = value.split(' ')[1]
+
+            [this.firstName,this.lastName] = value.split(' ')
+          }
+        }
+      },
+      methods:{
+        change(){
+          this.fullName = '李 四'
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2>{{ time | filterTime}}</h2>
+  </div>
+
+  <!--引入vue.js-v2版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script>
+
+  <script>
+    
+    /*
+      在vue2中，对于数据处理，可以借助过滤器实现数据过滤
+    */
+    new Vue({
+      el:'#app', // 挂载点，让vue专门处理的区域
+      data:{
+        time:Date.now()
+      },
+      filters:{
+        filterTime(time){
+          const date = new Date(time)
+          return date.getFullYear()
+        }
+      }
+    })
+    
+  </script>
+</body>
+</html>

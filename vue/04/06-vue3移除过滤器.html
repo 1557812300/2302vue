@@ -8,37 +8,32 @@
 <body>
   
   <div id="app">
-    <!--hello组件的调用-->
-    <hello></hello>
+    <h2>{{ computedTime }}</h2>
   </div>
-
-  <!--显示组件的模板结构-->
-  <template id="helloTemp">
-    <div>
-      <h2>我是hello组件</h2>
-      <span>span....</span>
-    </div>
-  </template>
 
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
 
+
   <script>
+    
+    /*
+      在vue3中，移除了过滤器，因为可以借助computed计算属性解决了
+    */
     const {createApp} = Vue
     const app = createApp({
-      components:{ // 局部组件注册
-        hello:{
-          template:`#helloTemp`
+      data(){
+        return {
+          time:Date.now()
+        }
+      },
+      computed:{
+        computedTime(){
+          const date = new Date(this.time)
+          return date.getFullYear()
         }
       }
     })
-    
-    // 全局组件注册
-    // app.component('hello',{
-    //   template:'<h1>Hello</h1>'
-    // })
-
     app.mount('#app')
-
     
   </script>
 </body>

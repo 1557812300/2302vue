@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <ul>
+      <li v-for="item in arr">{{item}}</li>
+    </ul>
+    <button @click="clickArr">更改数据</button>
+  </div>
+
+  <!--引入vue.js-v3版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script> -->
+  <script>
+    /*
+      Vue 能够侦听响应式数组的变更方法，并在它们被调用时触发相关的更新。这些变更方法包括：
+      push()
+      pop()
+      shift()
+      unshift()
+      splice()
+      sort()
+      reverse()
+
+      请问：slice/concat/filter是不是数组的更新变异检测方法？ 不是
+      请问: Object.defineProperty的缺陷？
+        不能检测对象的新增属性的添加与删除
+        数组的某些操作也不会触发视图更新
+    */
+
+    // new Vue({
+    //   el:'#app',
+    //   data:{
+    //     arr:['a','b','c']
+    //   },
+    //   methods:{
+    //     clickArr(){
+    //       // this.arr[0] = 'aaa' 界面在vue2.0中是不会更新的
+    //       // this.arr.splice(0,1,'aaa') 可以借助splice实现界面更新
+    //       // Vue.set(this.arr,0,'aaa')
+
+    //       // this.arr.length = 2 界面在vue2.0中是不会更新的
+    //       // this.arr.splice(2)
+
+    //       // delete this.arr[0] 界面在vue2.0中不会更新
+    //       // Vue.delete(this.arr,0)
+    //     }
+    //   }
+    // })
+
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          arr:['a','b','c']
+        }
+      },
+      methods:{
+        clickArr(){
+          // this.arr[0] = 'aaa'
+          // this.arr.length = 2
+          // delete this.arr[0]
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

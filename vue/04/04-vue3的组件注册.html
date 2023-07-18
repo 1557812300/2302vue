@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <!--hello组件的调用-->
+    <hello></hello>
+  </div>
+
+  <!--显示组件的模板结构-->
+  <template id="hello">
+    <div>
+      <h2>我是hello组件</h2>
+      <span>span....</span>
+    </div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    const {createApp} = Vue
+    const app = createApp({
+      components:{ // 局部组件注册
+        hello:{
+          template:'#hello'  // 关联组件的模板结构
+        }
+      }
+    })
+    
+    // 全局组件注册
+    // app.component('hello',{
+    //   template:'<h1>Hello</h1>'
+    // })
+
+    app.mount('#app')
+
+    
+  </script>
+</body>
+</html>

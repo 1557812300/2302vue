@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2 id="h2">{{msg}}</h2>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      vue3的生命周期：
+        主要包含三个阶段： 初始化挂载阶段  更新阶段  销毁阶段
+        初始化挂载阶段钩子函数：
+          beforeCreate
+          created
+          beforeMount
+          mounted
+
+        更新阶段钩子函数：
+          beforeUpdate
+          updated
+
+        销毁阶段钩子函数：
+          beforeUnmount
+          unmounted
+    */
+    const {createApp} = Vue
+    createApp({
+      data(){
+        return {
+          msg:'app'
+        }
+      },
+      // 数据获取不到
+      beforeCreate(){
+        console.log('beforeCreate...',this.msg,document.querySelector('#h2'))
+      },
+      // 数据可以获取到,但是页面中h2这个真实dom节点不能获取到
+      // 作用？ 进行异步请求数据，获取数据之后对当前的msg进行赋值操作
+      created(){
+        console.log('created...',this.msg,document.querySelector('#h2'))
+        // setTimeout(() => {
+        //   this.msg = 'helloworld...'
+        // }, 2000);
+      },
+      // 将组件的template模板进行编译，编译成虚拟dom对象，即将要渲染成真实dom节点
+      beforeMount(){
+        console.log('beforeMount...',this.msg,document.querySelector('#h2'))
+      },
+      mounted(){
+        console.log('mounted...',this.msg,document.querySelector('#h2'))
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

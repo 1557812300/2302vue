@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+
+  <div id="app">
+    <h1>{{msg}}</h1>
+    <!-- <input type="text" v-model="msg"> -->
+    <!-- <input type="text" :value="msg" @input="event=>msg=event.target.value"> -->
+
+    <!--3.调用子组件child，绑定自定义事件-->
+    <!-- <child :model-value="msg" @update:model-value="changeMsg"></child> -->
+    <child v-model="msg"></child>
+  </div>
+
+  <!--定义child组件的模板-->
+  <template id="child">
+    <div class="child">
+      <input type="text" :value="modelValue">
+      <!--4.子组件需要触发绑定在自身上面的自定义事件 update:model-value-->
+      <button @click="$emit('update:modelValue',100)">更改数据</button>
+    </div>
+  </template>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      v-model如果用在表单元素上面，原理就是绑定了value属性与监听了input事件。
+      v-model如果用在组件上面，绑定了modelValue属性与监听了update:modelValue事件
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          msg:'app' // 1.父组件定义自己的数据
+        }
+      },
+      methods:{
+        changeMsg(val){ // 2.父组件写一个更改自身数据的方法
+          this.msg = val
+        }
+      },
+      components:{
+        child:{
+          template:'#child',
+          props:['modelValue'],// 接收父组件传递来的属性名modelValue
+          emits: ['update:modelValue'] // 需要触发的事件名
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

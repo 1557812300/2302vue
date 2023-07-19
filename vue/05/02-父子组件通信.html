@@ -12,13 +12,14 @@
     <h1>{{msg}}</h1>
     <hr/>
     <!--1. 父组件调用子组件的时候，将数据传递下去-->
-    <child :msg="msg" :user="user"></child>
+    <child :model-value="msg"></child>
   </div>
 
   <!--定义child组件的模板-->
   <template id="child">
     <div class="child">
-      <p >我是child组件...{{msg + 1}}...{{user}}</p>
+      <p >我是child组件...{{modelValue}}</p>
+      <p><input type="text" :value="modelValue"></p>
     </div>
   </template>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
@@ -34,26 +35,17 @@
       data(){
         return {
           msg:100,
-          user:{
-            name:'zhangsan'
-          }
         }
       },
       components:{
         child:{
-          // props:['msg'], // 2.子组件接受父组件传递来的msg属性内容
-          props:{ // 如果希望对于外部传入的属性进行验证的话
-            msg:{
-              type:[Number,String],  // 外部传入的msg属性值必须是Number才可以
-              default:1
-            },
-            user:{
-              type:Object,
-              default:()=>{
-                return {name:'张三'}
-              }
-            }
-          },
+          props:['modelValue'], // 2.子组件接受父组件传递来的msg属性内容
+          // props:{ // 如果希望对于外部传入的属性进行验证的话
+          //   // msg:{
+          //   //   type:[Number,String],  // 外部传入的msg属性值必须是Number才可以
+          //   //   default:1
+          //   // },
+          // },
           template:'#child'
         }
       }

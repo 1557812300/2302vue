@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+
+  <div id="app">
+    <h1>{{msg}}</h1>
+    <hr/>
+    <!--3.父组件调用子组件的时候，给其绑定一个自定义的事件-->
+    <child @change="changeMsg"></child>
+  </div>
+
+  <!--定义child组件的模板-->
+  <template id="child">
+    <div class="child">
+      <p>我是child...{{cmsg}}</p>
+      <button @click="say">我要告诉爸爸</button>
+    </div>
+  </template>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      子父组件通信？基于事件触发的（$emit)
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          msg:'', // 1.在父组件中定义一个数据
+        }
+      },
+      methods:{
+        changeMsg(msg){
+          this.msg = msg  // 2. 父组件提供一个更改自身数据的方法
+        }
+      },
+      components:{
+        child:{
+          template:'#child',
+          data(){
+            return {
+              cmsg:'我要吃小浣熊方便面...'
+            }
+          },
+          methods:{
+            say(){
+              // 4. 需要触发绑定在自身上面的自定义事件 change
+              this.$emit('change',this.cmsg)
+            }
+          }
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

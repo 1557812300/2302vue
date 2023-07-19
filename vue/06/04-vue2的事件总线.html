@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <my-content></my-content>
+    <my-footer></my-footer>
+  </div>
+
+  <!--引入vue.js-v2版本线上cdn链接-->
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.0/vue.js"></script>
+
+  <script>
+    // vue2借助事件总线实现组件通信（兄弟组件）
+
+    const bus = new Vue() // 1. 创建了bus实例
+    const content = {
+      template:`<div>{{type}}</div>`,
+      data(){
+        return {type:'首页'}
+      },
+      mounted(){
+        bus.$on('change-type',(val)=>{ // 2 content组件创建完毕后，给其bus上面绑定了自定义事件change-type
+          // console.log('事件触发了哦。。。。',val)
+          this.type = val
+        })
+      }
+    }
+    const footer = {
+      template:`<div>
+        <ul>
+          <li @click='changeType("首页")'>首页</li>  
+          <li @click='changeType("分类")'>分类</li>  
+          <li @click='changeType("我的")'>我的</li>  
+        </ul>  
+      </div>`,
+      methods:{
+        changeType(type){
+          // 3.触发bus上面的自定义事件change-type
+          bus.$emit('change-type',type)
+        }
+      },
+    }
+    const vm = new Vue({
+      el:'#app', // 挂载点，让vue专门处理的区域
+      components:{
+        myContent:content,
+        myFooter:footer
+      }
+    })
+  </script>
+</body>
+</html>

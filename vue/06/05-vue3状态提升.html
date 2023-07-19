@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <my-content :type="type"></my-content>
+    <my-footer @change="changeType"></my-footer>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    // vue3中将兄弟组件用到的数据，方法进行提升到离他们最近的父组件中。
+    const {createApp} = Vue
+    const content = {
+      template:`<div>{{type}}</div>`,
+      props:['type']
+    }
+    const footer = {
+      template:`<div>
+        <ul>
+          <li @click='changeType("首页")'>首页</li>  
+          <li @click='changeType("分类")'>分类</li>  
+          <li @click='changeType("我的")'>我的</li>  
+        </ul>  
+      </div>`,
+      methods:{
+        changeType(type){
+          // 触发绑定在自身上面的自定义事件change
+          this.$emit('change',type)
+        }
+      },
+      emits:['change'] // 声明一下触发的自定义事件
+    }
+    createApp({
+      data(){
+        return {
+          type:'首页'
+        }
+      },
+      methods:{
+        changeType(type){
+          this.type = type
+        }
+      },
+      components:{
+        myContent:content,
+        myFooter:footer
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

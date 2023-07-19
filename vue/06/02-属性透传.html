@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+
+  <div id="app">
+    <child @click="clickme" class="child-com" :msg="msg" a="1" b="2"></child>
+  </div>
+
+  <!--定义child组件的模板-->
+  <template id="child">
+    <div class="child">
+      <h2 v-bind="$attrs">child...</h2>
+    </div>
+  </template>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      如果子组件通过props接受了，就不会放在最外层根元素上面了
+      如果配置了inheritAttrs:false，根元素就不会有所有的属性了
+      如果设置了v-bind='$attrs'那个这个标签上就会有对应的传递下来的属性
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      methods:{
+        clickme(){
+          alert(1)
+        }
+      },
+      data(){
+        return {
+          msg:'app的数据', 
+        }
+      },
+      components:{
+        child:{
+          template:'#child',
+          props:['msg'], // 如果接收了，这个数据msg就不会放在根元素上面了
+          inheritAttrs:false // 默认透传的数据不会放在根元素上面了
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

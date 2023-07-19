@@ -19,7 +19,7 @@
   <template id="child">
     <div class="child">
       <p>我是child...{{cmsg}}</p>
-      <button @click="say">我要告诉爸爸</button>
+      <button @click="$emit('change',cmsg)">我要告诉爸爸</button>
     </div>
   </template>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>

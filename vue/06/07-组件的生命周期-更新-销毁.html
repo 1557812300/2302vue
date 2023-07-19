@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <h2 id="h2">{{msg}}</h2>
+    <button @click="destroy">销毁组件</button>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      vue3的生命周期：
+        主要包含三个阶段： 初始化挂载阶段  更新阶段  销毁阶段
+        初始化挂载阶段钩子函数：
+          beforeCreate
+          created
+          beforeMount
+          mounted
+
+        更新阶段钩子函数：
+          beforeUpdate
+          updated
+
+        销毁阶段钩子函数：
+          beforeUnmount
+          unmounted
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      methods:{
+        destroy(){
+          app.unmount() // 卸载组件
+        }
+      },
+      data(){
+        return {
+          msg:'app'
+        }
+      },
+      // 数据获取不到
+      beforeCreate(){
+        console.log('beforeCreate...',this.msg,document.querySelector('#h2'))
+      },
+      // 数据可以获取到,但是页面中h2这个真实dom节点不能获取到
+      // 作用？ 进行异步请求数据，获取数据之后对当前的msg进行赋值操作
+      created(){
+        console.log('created...',this.msg,document.querySelector('#h2'))
+        this.timer = setInterval(() => {
+          console.log('定时器开启了...')
+          this.msg += '!'
+        }, 2000);
+      },
+      // 将组件的template模板进行编译，编译成虚拟dom对象，即将要渲染成真实dom节点
+      beforeMount(){
+        console.log('beforeMount...',this.msg,document.querySelector('#h2'))
+      },
+      mounted(){
+        console.log('mounted...',this.msg,document.querySelector('#h2'))
+      },
+      // mounted执行完毕后，数据改变了，才会立即出发beforeUpdate
+      beforeUpdate(){
+        console.log('beforeUpdate...',this.msg,document.querySelector('#h2').innerHTML)
+      },
+      // 数据改变了，内部进行虚拟dom的diff算法，算出patch差异部分，将差异的部分进行真实dom的渲染，渲染完成后，就会走updated.
+      updated(){
+        console.log('updated...',this.msg,document.querySelector('#h2').innerHTML)
+      },
+      // 组件销毁的时候触发，例如可以清空定时器
+      beforeUnmount(){
+        console.log('beforeUnmout')
+        clearInterval(this.timer)
+      },
+      unmounted(){
+        console.log('unmounted')
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

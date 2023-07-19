@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+
+  <div id="app">
+    <button @click="add">添加</button>
+    <ul>
+      <li v-for="item,index in arr" :key="index">
+        <input type="checkbox">
+        {{item.name}}
+      </li>
+    </ul>
+  </div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      v-for中的key尽量用唯一的id字段，用index确保数组的下标保持不变（单纯的做渲染操作是可以用index的）
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          arr:[
+            {name:'苹果',id:1},
+            {name:'香蕉',id:2},
+            {name:'橘子',id:3},
+          ]
+        }
+      },
+      methods:{
+        add(){
+          this.arr.unshift({name:'核桃',id:4})
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

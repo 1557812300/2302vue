@@ -5342,6 +5342,26 @@ module.exports = {
 
 
 
+找不到模块“./App.vue”或其相应的类型声明
+
+typescript只能理解.ts文件，无法理解.vue文件
+
+env.d.ts文件：
+
+```
+declare module '*.vue' {
+  // 引入vue模块中ts的方法
+  import type { DefineComponent } from 'vue'
+  // 定义vue组件以及类型注解
+  const component: DefineComponent<{}, {}, any>
+  export default component
+}
+```
+
+关闭vscode，重新打开尝试
+
+
+
 ### [14.2 单文件组件](https://cn.vuejs.org/v2/guide/single-file-components.html)
 
 vue中的单文件组件包含三部分：**template  script  style** 

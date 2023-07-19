@@ -8,7 +8,7 @@
 <body>
   
   <div id="app">
-    <!-- <h1>{{msg}}</h1> -->
+    <h1>{{msg}}</h1>
     <!--调用组件hello-->
     <hello></hello>
     <hello></hello>
@@ -26,6 +26,7 @@
 
   <script>
     /*
+      组件之间的数据作用域是独立的，不能相互干扰。
       app的实例当中，只能访问自己的msg数据,不能访问孩子hello组件的数据
       hello组件的模板中，只能访问自己的msg数据，不能访问父组件app的数据
 
@@ -34,20 +35,20 @@
         组件的data必须是一个函数，因此每个实例可以维护一份被返回对象的独立的拷贝。
         如果data是对象的话，所有的组件都会共享这一份内存地址的数据，如果有一个组件对其进行更改了数据，其他的组件的数据都会更改。
     */
-    // let json = {msg:'hello组件自己的数据...'}
+    let json = {msg:'hello组件自己的数据...'}
     const {createApp} = Vue
     const app = createApp({
       data(){
         return {
-          // msg:'我是app实例的数据....'
+          msg:'我是app实例的数据....'
         }
       },
       components:{
         hello:{
           template:'#hello',
-          data(){
+          data(){  //data:{msg:'xxxxx'}
             return {
-              msg:'hello组件自己的数据...'
+              msg:'xxx'
             }
           }
         }

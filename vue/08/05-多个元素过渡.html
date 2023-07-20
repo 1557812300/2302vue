@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    /*当元素进入的时候*/
+    .v-enter-from{opacity: 0;}
+    .v-enter-to{opacity: 1;}
+    .v-enter-active{
+      transition:all 3s;
+    }
+
+    /*当元素离开的时候*/
+    .v-leave-from{opacity: 1;}
+    .v-leave-to{opacity: 0;}
+    .v-leave-active{transition:all 3s}
+
+
+  </style>
+</head>
+<body>
+  
+  <div id="app">
+    <button @click="isShow=!isShow">切换</button>
+    <!-- <transition>
+      <div v-show="isShow">
+        <h1>我是h1标题</h1>
+        <h1>我是h1标题</h1>
+      </div>
+    </transition> -->
+
+    <!--借助transition-group进行多个元素过度-->
+    <!-- <transition-group>
+      <h1 v-show="isShow" key="1">我是h1标题</h1>
+      <h1 v-show="isShow" key="2">我是h1标题</h1>
+    </transition-group> -->
+
+    <!--指定动画的过渡模式 -->
+    <transition mode="out-in" appear @after-enter="onAfterEnter" @before-leave="onBeforeLeave">
+      <h1 v-if="isShow">我是h1标题1</h1>
+      <h1 v-else>我是h1标题2</h1>
+    </transition>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          isShow:true
+        }
+      },
+      methods:{
+        onAfterEnter(){
+          console.log('after-enter....')
+        },
+        onBeforeLeave(){
+          console.log('before-leave...')
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

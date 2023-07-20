@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!--引入animate.css动画库-->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <style>
+    .box{
+      width:200px;
+      height:200px;
+      background: red;
+    }
+
+  </style>
+</head>
+<body>
+  
+  <div id="app">
+    <button @click="isShow=!isShow">切换</button>
+    
+    <!--指定动画的过渡模式 -->
+    <transition 
+      enter-active-class="animate__animated animate__flip"
+      leave-active-class="animate__animated animate__bounceOutRight"
+      mode="out-in"
+    >
+      <div class="box" v-if="isShow">我是div标题1</div>
+      <div class='box' v-else>我是div标题2</div>
+    </transition>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          isShow:true
+        }
+      },
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

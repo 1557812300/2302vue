@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <fancy-button>
+      <template #default="info">哈哈哈哈-{{info.count}}</template>
+    </fancy-button>
+
+    <fancy-button v-slot:default="info">
+      <span>哈哈哈哈-{{info.count*2}}-{{info.msg}}</span>
+    </fancy-button>
+  </div>
+
+  <!--定义组件模板结构-->
+  <template id="fancyButton">
+    <div>
+      <slot :count="count" msg="我是msg"></slot>
+    </div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      作用域插槽？
+        子组件的数据可以借助slot插槽向外暴露，让父组件可以访问到
+    */
+    const {createApp} = Vue
+    createApp({
+      data(){
+        return {
+        }
+      },
+      components:{
+        fancyButton:{
+          template:'#fancyButton',
+          data(){
+            return {
+              count:100
+            }
+          }
+        },
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

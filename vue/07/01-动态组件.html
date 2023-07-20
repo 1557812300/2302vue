@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <button @click="type='home'">切换home组件</button>
+    <button @click="type='card'">切换card组件</button>
+    <keep-alive include="home1">
+      <component :is="type"></component>
+    </keep-alive>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      可以借助:is='变量'的形式进行组件的切换
+      如果将动态组件放在keep-alive标签中，那么组件就不会被销毁，会进行缓存，created只会走一次，销毁不了。
+      只能在activated中进行初始化的事件绑定、定时器开启操作。在deactivated钩子函数中进行定时器销毁。
+
+      默认keep-alive缓存了所有的组件，可以通过include属性指定到底缓存谁。
+      只有当组件被缓存了，才会触发activated 、deactivated
+    */
+    const {createApp} = Vue
+    createApp({
+      data(){
+        return {
+          type:'home'
+        }
+      },
+      components:{
+        home:{
+          name:'home1', // 起好名字,上面include中使用
+          template:'<div>home</div>',
+          // created(){
+          //   console.log('home-created..')
+          // },
+          // beforeUnmount(){
+          //   console.log('home-beforeUnmount')
+          // }
+
+          activated(){
+            console.log('home-activated...')
+          },
+          deactivated(){
+            console.log('home-deactivated...')
+          }
+        },
+        card:{
+          name:'card1',
+          template:'<div>card</div>',
+          activated(){
+            console.log('card-activated...')
+          },
+          deactivated(){
+            console.log('card-deactivated...')
+          }
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

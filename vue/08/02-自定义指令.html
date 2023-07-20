@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <input type="text" v-focus>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      自定义指令可以用来操作底层的dom元素的
+      v-focus
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+        }
+      },
+      // directives:{ // 局部的自定义指令
+      //   focus:{
+      //     mounted(el){
+      //       el.focus() // 让输入框获取焦点
+      //     }
+      //   }
+      // }
+    })
+
+    // 全局的自定义指令v-focus
+    app.directive('focus',{
+      mounted(el){
+        el.focus() // 让输入框获取焦点
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

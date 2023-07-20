@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <!-- <child></child> -->
+
+     <!-- Suspense内部需要一个根组件 -->
+     <Suspense>
+      <!-- 异步加载组件 -->
+      <child></child>
+
+      <!-- 加载状态 -->
+      <template #fallback>
+        加载中...
+      </template>
+    </Suspense>
+  </div>
+
+
+  <template id="child">
+    <div>child....</div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      可以借助defineAsyncComponent定义vue的异步组件
+      可以配合Suspense内置组件与fallback插槽实现异步组件未渲染之前的一些loading效果。
+    */
+    const {createApp,defineAsyncComponent} = Vue
+    const Child = {
+      template:'#child'
+    }
+    const asyncChild = defineAsyncComponent(()=>{
+      return new Promise((resolve)=>{
+        setTimeout(() => {
+          resolve(Child)
+        }, 3000);
+      })
+    })
+    const app = createApp({
+      data(){
+        return {
+        }
+      },
+      components:{
+        child:asyncChild  // 异步的Child组件
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

@@ -4273,7 +4273,7 @@ const AsyncComp = defineAsyncComponent(() => {
 import { defineAsyncComponent } from 'vue'
 
 const AsyncComp = defineAsyncComponent(() =>
-  import('./components/MyComponent.vue')
+  import('./components/MyComponent.vue') // 动态import语法其实就是返回一个promise实例
 )
 ```
 

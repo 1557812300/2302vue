@@ -10,7 +10,7 @@
   <div id="app">
     <button @click="type='home'">切换home组件</button>
     <button @click="type='card'">切换card组件</button>
-    <keep-alive include="home1">
+    <keep-alive include="card1">
       <component :is="type"></component>
     </keep-alive>
   </div>
@@ -36,7 +36,12 @@
       components:{
         home:{
           name:'home1', // 起好名字,上面include中使用
-          template:'<div>home</div>',
+          data(){
+            return {
+              count:1
+            }
+          },
+          template:'<div @click="count++"><span>home-{{count}}</span></div>',
           // created(){
           //   console.log('home-created..')
           // },

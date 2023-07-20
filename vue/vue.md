@@ -16,7 +16,7 @@ vue是**渐进式JavaScript框架**    用到什么功能，只需要引入什�
 
 - 如果只是简单的将数据与视图进行关联渲染，只需要引入vue即可实现声明式渲染
 - 如果后续多个地方用到轮播图效果，那么我们可以借助vue的组件化思想进行封装
-- 如果要做前端SPA单页路由，需要引入第三方插件实现路由功能
+- 如果要做前端SPA单页路由，需要引入第三方插件s实现路由功能
 - 如果涉及多组件之间的状态管理维护，需要引入第三方插件vuex实现状态管控
 - 如果项目最终上线、团队开发等需要引入webpack等构建工具进行项目打包、构建、迭代操作
 
@@ -271,7 +271,7 @@ const proxy = new Proxy(target,{
 console.log(proxy.a) //获取
 proxy.a = 'aaaa'     //设置
 proxy.c = 'cccc'     //增加一个额外的c属性
-delete proxy.a       //删除a
+delete proxy.a       //删除代理对象的属性a
 
 console.log(target)
 ```
@@ -4244,6 +4244,7 @@ const AsyncComp = defineAsyncComponent(() => {
   const Com = {
     template: '#com'
   }
+  // 定义异步组件。规定了3s以后才会渲染
   const myCom = defineAsyncComponent(() => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -4254,8 +4255,8 @@ const AsyncComp = defineAsyncComponent(() => {
 
   createApp({
     components: {
-      myTest: Com,
-      myCom,
+      myTest: Com, 
+      myCom,  // 注册异步组件
     }
   }).mount('#app')
 </script>
@@ -5278,6 +5279,12 @@ ESM打包器流程图
 
 
 
+**vite 与 webpack对比：**
+
+> vite服务器启动速度比webpack快，由于vite启动的时候不需要打包，也就无需分析模块依赖、编译，所以启动速度非常快。当浏览器请求需要的模块时，再对模块进行编译，这种按需动态编译的模式，极大缩短了编译时间，当项目越大，文件越多时，vite的开发时优势越明显。vite热更新比webpack快，vite在HRM方面，当某个模块内容改变时，让浏览器去重新请求该模块即可，而不是像webpack重新将该模块的所有依赖重新编译。
+
+
+
 ```js
 ## 创建工程
 npm init vue@latest
@@ -5359,6 +5366,8 @@ declare module '*.vue' {
 ```
 
 关闭vscode，重新打开尝试
+
+
 
 
 

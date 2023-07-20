@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <button @click="money=1000">{{money}}</button>
+    <parent></parent>
+  </div>
+
+  <!--定义组件模板结构-->
+  <template id="parent">
+    <div>
+      我是parent组件
+      <child></child>
+    </div>
+  </template>
+
+  <template id="child">
+    <div>我是child组件-{{money}}-{{injectMoney}}</div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+    */
+    const {createApp,computed} = Vue
+    const money = 'MONEY'
+    const app = createApp({
+      data(){
+        return {
+          money:100
+        }
+      },
+      // provide:{ // this获取不到
+      //   money:this.money
+      // },
+      provide(){ // 这种写法才可以获取data选项中的数据
+        return {
+          [money]:computed(()=>this.money) //当修改了money->1000的时候，后代组件用到的数据都会跟着响应式改变。
+        }
+      },
+      components:{
+        parent:{
+          template:'#parent',
+          components:{
+            child:{
+              template:'#child',
+              data(){return {money:1}},
+              // inject:['money'] // 获取root组件上面的provide提供的money数据了
+              inject:{ // 避免跟自己data中数据冲突
+                injectMoney:{
+                  from:[money],
+                  default:10
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+
+    app.config.unwrapInjectedRef = true
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

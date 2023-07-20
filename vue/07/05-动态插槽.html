@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <button @click="changeType">切换</button>
+    <fancy-button>
+      <template v-slot:[type]>{{type}}</template>
+    </fancy-button>
+  </div>
+
+  <!--定义组件模板结构-->
+  <template id="fancyButton">
+    <div>
+      <slot name="aaa">默认的aaa的位置</slot>
+      <slot name="bbb">默认的bbb的位置</slot>
+    </div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      动态插槽的语法：
+        <template v-slot:[type]></template>
+    */
+    const {createApp} = Vue
+    createApp({
+      data(){
+        return {
+          type:'aaa'
+        }
+      },
+      methods:{
+        changeType(){
+          this.type = this.type==='aaa'?'bbb':'aaa'
+        }
+      },
+      components:{
+        fancyButton:{
+          template:'#fancyButton',
+        },
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

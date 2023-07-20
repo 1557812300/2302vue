@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    {{value}}
+    <!--通过v-model指令关联value,只要用户在输入框中输入内容了,value就会更改,从而触发自定义指令的updated钩子函数-->
+    <input type="text" v-tel="value" v-model="value">
+    <hr/>
+    <div v-color="{color}">我是div</div>
+    <button @click="color='pink'">更改color-{{color}}</button>
+  </div>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      自定义指令可以用来操作底层的dom元素的
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          value:'',
+          color:'green'
+        }
+      },
+    })
+
+    // v-color
+    // app.directive('color',{
+    //   mounted(el,binding){
+    //     el.style.background = binding.value
+    //   },
+    //   updated(el,binding){
+    //     el.style.background = binding.value
+    //   },
+    // })
+
+    // 如果mounted与updated内部业务一样的话，简化写成如下形式。
+    app.directive('color',(el,binding)=>{
+      el.style.background = binding.value.color
+    })
+
+
+    // 全局的自定义指令v-tel
+    app.directive('tel',{
+      // mounted(el,binding){
+      //   console.log('mounted..',binding.value)
+      // },
+      updated(el,binding){
+        if(/^1[3-9]\d{9}$/.test(binding.value)){
+          el.style.color = 'green'
+        }else{
+          el.style.color = 'red'
+        }
+      }
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

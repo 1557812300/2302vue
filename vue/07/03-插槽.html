@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <div id="app">
+    <fancy-button>
+      <template v-slot:hahaha><span>哈哈哈</span></template>
+      <template #xixixi><span>嘻嘻嘻</span></template>
+      <template #default>
+        <div class="other">
+          <h3>1111</h3>
+          <h3>2222</h3>
+        </div>
+      </template>
+    </fancy-button>
+  </div>
+
+  <!--定义组件模板结构-->
+  <template id="fancyButton">
+    <div>
+      <slot name="hahaha">默认的hahhaah</slot>
+      <button>默认按钮</button>
+      <slot name="xixixi"></slot>
+      <!--匿名插槽，默认有name属性的，叫做 name='default'-->
+      <slot></slot>
+    </div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+
+  <script>
+    /*
+      具名插槽：需要在子组件模板中定义  <slot name='header'></slot>
+      父组件调用子组件的时候，需要指明插槽的名字，才可以将某些内容插入到子组件模板中
+
+      v-slot:hahaha --->  #hahaha
+    */
+    const {createApp} = Vue
+    createApp({
+      data(){
+        return {
+        }
+      },
+      components:{
+        fancyButton:{
+          template:'#fancyButton',
+        },
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

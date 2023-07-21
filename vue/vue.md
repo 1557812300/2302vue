@@ -5390,85 +5390,91 @@ vue中的单文件组件包含三部分：**template  script  style**
 child.vue
 
 ```scss
-// scoped的深度穿透， 不仅影响自己的span标签，还影响后代的span标签的样式
-::v-deep span {  //[data-v-b36379bb] span
-  background: yellow;
-  width: v-bind(computedWidth); // 当computedWidth=200px & computedWidth=100px
-  display: inline-block;
-}	
-```
-
-```vue
 <template>
-  <div @click="change" class="child">
-    <p class="c-p">
-      child... <span @click.stop="flag = !flag">{{ msg }}</span>
-    </p>
-    <hr />
-    <Aaa />
+  <div class="child">
+    <h2 class="h2">child.vue...</h2>
+    <hr/>
+    <One></One>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import Aaa from './Aaa.vue'
-export default defineComponent({
+import One from './one.vue'
+export default {
   components: {
-    Aaa
-  },
-  props: {
-    msg: {
-      type: String
-    }
-  },
-  methods: {
-    change() {
-      // 子父组件通信
-      this.$emit('changemsg', 'xxxx')
-    }
-  },
-  data() {
-    return {
-      flag: true
-    }
-  },
-  computed: {
-    computedWidth() {
-      return this.flag ? '200px' : '100px'
-    }
+    One
   }
-})
+}
 </script>
 
-<!--scoped属性限制样式只能在当前组件可用-->
-<style scoped lang="scss">
-.c-p {
-  color: red;
-}
-// scoped的深度穿透，不仅影响自己的span标签，还影响后代的span标签的样式
-::v-deep span {
-  background: yellow;
-  width: v-bind(computedWidth); // 当computedWidth=200px & computedWidth=100px
-  display: inline-block;
-}
+<!--
+  scoped限制样式只能影响当前组件 背后的原理？ 会在标签上面添加data-v-xxx属性  后续根据属性选择器找到该元素
+  默认子组件里面有h2的class，也不会受到影响，如果希望子组件的样式受到影响的话，需要用到:deep穿透
+-->
+<style lang="scss" scoped>
+  :deep(.one-h2){ //  [data-v-xxx] .h2{color:pink;}
+    color:pink;
+    font-size: 20px;
+    background: yellow;
+  }
 </style>
 
 ```
 
+One.vue
+
 ```vue
 <template>
-  <div class="aaa">
-    <span>aaa</span>
+  <div>
+    <h2 class="one-h2">one....</h2>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+export default {
+  data () {
+    return {
 
-export default defineComponent({})
+    }
+  },
+  methods: {
+
+  },
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped lang="scss">
+ 
+</style>
+
+```
+
+
+
+App.vue
+
+```vue
+<script>
+  // 1.引入child.vue组件
+  import Child from './components/child.vue'
+  export default {
+    name: 'App',
+    components: { // 2.局部注册组件
+      Child
+    },
+  }  
+</script>  
+
+<template>  
+  <div>
+    <h2 class="h2">我是App.vue</h2>
+    <Child/>
+  </div>
+</template>
+
+<style lang="scss">
+  
+</style>
 
 ```
 

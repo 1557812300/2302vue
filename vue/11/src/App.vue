@@ -1,16 +1,18 @@
 <script>
+  // 1.引入child.vue组件
+  // import Child from './components/child.vue'
   export default {
     name: 'App',
-    data () {
-      return {
-        msg: 'helloApp...'  
-      }
-    }    
+    // components: { // 2.局部注册组件
+    //   Child
+    // },
   }  
 </script>  
 
 <template>  
-  <h2>{{ msg }}</h2>
+  <div>
+    <Child/>
+  </div>
 </template>
 
 <style scoped>

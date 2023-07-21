@@ -13,6 +13,7 @@ module.exports = {
     'spaced-comment': 'error',
     'key-spacing': 'error',
     'space-before-function-paren': 'error',
-    'space-before-blocks': 'error'
+    'space-before-blocks': 'error',
+    'vue/multi-word-component-names': 'off' // eslint不对这个进行校验了
   }  
 }

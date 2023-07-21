@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    
+  </style>
+</head>
+<body>
+  
+  <div id="app">
+    <!-- <child1></child1> -->
+    <hr/>
+    <child2></child2>
+  </div>
+  <template id="child1">
+    <div>
+      <h1 @click="changeCount(100)">child1....{{count}}</h1>
+    </div>
+  </template>
+  <template id="child2">
+    <div>
+      <h1 @click="changeCount(200)">child2....{{count}}</h1>
+    </div>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      混入的如果是data数据、计算属性、方法的话，组件自身的优先，并且会覆盖混入的。
+      混入的如果是生命周期的话，混入的先去执行，再去执行自身的。
+    */
+    const {createApp} = Vue
+    const mixin = {
+      data(){
+        return {
+          count:10
+        }
+      },
+      methods:{
+        changeCount(count){
+          this.count = count
+        }
+      },
+      created(){
+        console.log('created-mixin...')
+      }
+    }
+    const app = createApp({
+      components:{
+       child1:{
+        template:'#child1',
+        mixins:[mixin] // 局部的混入
+       },
+       child2:{
+        template:'#child2',
+        // data(){return {count:1}},
+        created(){console.log('created-child2....')},
+        mixins:[mixin] // 局部的混入
+       }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

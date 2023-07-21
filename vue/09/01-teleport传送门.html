@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    .modal {
+      position: fixed;
+      z-index: 999;
+      top: 20%;
+      left: 50%;
+      width: 300px;
+      margin-left: -150px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div id="app">
+    <h3>Tooltips with Vue 3 Teleport</h3>
+    <div>
+      <my-modal></my-modal>
+    </div>
+  </div>
+
+  <template id="myModal">
+    <button @click="open = true">Open Modal</button>
+    <!--通过teleport传送门将div结构放入到body结束之前-->
+    <teleport to="body">
+      <div v-if="open" class="modal">
+        <p>Hello from the modal!</p>
+        <button @click="open = false">Close</button>
+      </div>
+    </teleport>
+  </template>
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+        }
+      },
+      components:{
+        'my-modal':{
+          template:'#myModal',
+          data(){
+            return {
+              open:false
+            }
+          }
+        }
+      }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

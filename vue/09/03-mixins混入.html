@@ -12,22 +12,13 @@
 <body>
   
   <div id="app">
-    {{count}}
     <child1></child1>
-    <hr/>
-    <child2></child2>
   </div>
   <template id="child1">
     <div>
-      <h1 @click="changeCount(100)">child1....{{count}}</h1>
+      <h1 @click="changeCount(100)">child1....{{count}}...{{count2}}</h1>
     </div>
   </template>
-  <template id="child2">
-    <div>
-      <h1 @click="changeCount(200)">child2....{{count}}</h1>
-    </div>
-  </template>
-
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
   <script>
     /*
@@ -50,21 +41,30 @@
         console.log('created-mixin...')
       }
     }
+    const mixin2 = {
+      data(){
+        return {
+          count2:1000
+        }
+      },
+      methods:{
+        changeCount(count){
+          this.count = count
+        }
+      },
+      created(){
+        console.log('created-mixin...')
+      }
+    }
     const app = createApp({
       components:{
        child1:{
         template:'#child1',
-        // mixins:[mixin] // 局部的混入
-       },
-       child2:{
-        template:'#child2',
-        // data(){return {count:1}},
-        // created(){console.log('created-child2....')},
-        // mixins:[mixin] // 局部的混入
+        mixins:[mixin,mixin2] // 局部的混入
        }
       }
     })
-    app.mixin(mixin) // 全局慎用！  打印3次 （app一次  child1 一次  child2 一次）
+    // app.mixin(mixin) // 全局慎用！  打印3次 （app一次  child1 一次  child2 一次）
     app.mount('#app')
   </script>
 </body>

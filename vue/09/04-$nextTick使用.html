@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    
+  </style>
+</head>
+<body>
+  
+  <div id="app">
+    <div ref="div">{{count}}</div>
+    <button @click="add">更改</button>
+  </div>
+  
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.js"></script>
+  <script>
+    /*
+      例如created钩子函数进行dom操作的话？
+        因为在created函数中，页面的dom还没有渲染，这个时候没有办法直接进行dom的相关操作，所以借助$nextTick的回调函数解决。
+
+      nexTick()可以在数据改变之后立即调用，等待dom更新完成后才会执行。
+    */
+    const {createApp} = Vue
+    const app = createApp({
+      data(){
+        return {
+          count:0
+        }
+      },
+      methods:{
+        async add(){
+          this.count++
+          // this.$nextTick(()=>{
+          //   console.log(this.$refs.div.innerHTML)
+          // })
+          await this.$nextTick()
+          console.log(this.$refs.div.innerHTML)
+        }
+      },
+      // created(){
+      //   this.$nextTick(function(){
+      //     console.log(this.$refs.div.innerHTML)
+      //   })
+      // }
+      // updated(){ // 当数据改变了，内部进行虚拟dom的diff算法，算出差异patch进行更新真实dom，在获取更新完毕的真实dom内容就是最新的了。
+      //   console.log(this.$refs.div.innerHTML)
+      // }
+    })
+    app.mount('#app')
+  </script>
+</body>
+</html>

@@ -12,7 +12,8 @@
 <body>
   
   <div id="app">
-    <!-- <child1></child1> -->
+    {{count}}
+    <child1></child1>
     <hr/>
     <child2></child2>
   </div>
@@ -53,16 +54,17 @@
       components:{
        child1:{
         template:'#child1',
-        mixins:[mixin] // 局部的混入
+        // mixins:[mixin] // 局部的混入
        },
        child2:{
         template:'#child2',
         // data(){return {count:1}},
-        created(){console.log('created-child2....')},
-        mixins:[mixin] // 局部的混入
+        // created(){console.log('created-child2....')},
+        // mixins:[mixin] // 局部的混入
        }
       }
     })
+    app.mixin(mixin) // 全局慎用！  打印3次 （app一次  child1 一次  child2 一次）
     app.mount('#app')
   </script>
 </body>

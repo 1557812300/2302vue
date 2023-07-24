@@ -20,7 +20,7 @@
 // }
 // const myFn:Fn= ():string=>'helloworld'
 
-// 111
+
 // 剩余参数 (展开运算符)
 // function push (array:number[],...items:number[]) {
 //   items.forEach((item:number)=>{

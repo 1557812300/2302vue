@@ -6,5 +6,5 @@ import App from './App.vue'
 // const arr:arrType = [1,2,3]
 
 
-import './ts-anli/05-泛型'
+import './ts-anli/06-常用的工具api'
 createApp(App).mount('#app')

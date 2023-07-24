@@ -9652,11 +9652,12 @@ function loggingIdentity<T>(arg: T): T {
 interface Lengthwise {
   length: number
 }
-
+// 传递来的T类型必须要具备Lengthwise接口的规范
 function loggingIdentity<T extends Lengthwise>(arg: T): T {
   console.log(arg.length)
   return arg
 }
+loggingIdentity('hellow')
 ```
 
 上例中，我们使用了 `extends` 约束了泛型 `T` 必须符合接口 `Lengthwise` 的形状，也就是必须包含 `length` 属性。

@@ -17,6 +17,7 @@
 
 
 // 类型断言与接口
+// 所谓接口就是指定了一套标准与规范，让对象去实现这个接口。
 // interface Stu{
 //   name:string
 //   age:number

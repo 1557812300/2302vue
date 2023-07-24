@@ -1,8 +1,7 @@
 
-
 // 函数声明方式
 // function sum (x:number,y?:number):number {
-//   return x+(y||1)
+//   return x+(y||1)   
 // }
 // sum(1,100)
 

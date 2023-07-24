@@ -1,4 +1,5 @@
 
+// typescript -> ts 编译阶段就知道某些错误的原因，直接解决。
 // ts的基本类型-数值类型
 // let num:number|string = 100  // 联合类型num要么是number,要么是string
 // num = '100'

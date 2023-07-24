@@ -6689,6 +6689,346 @@ plugins: [
 
 
 
+
+
+### 17.7 Pinia实现多组件状态管理
+
+https://pinia.vuejs.org/zh/
+
+```
+yarn add pinia
+```
+
+store/index.ts
+
+```tsx
+import {createPinia} from 'pinia'
+const store = createPinia()
+export default store
+```
+
+main.ts
+
+```tsx
+// 引入pinia的store
+import store from '@/store'
+
+app.use(store)
+```
+
+
+
+接下来，就可以创建相应的模块了：
+
+store/counter.ts
+
+```tsx
+import { ref, computed, reactive} from 'vue'
+import { defineStore } from 'pinia'
+
+interface IUser{
+  name:string
+  age:number
+}
+
+// 基于组合式配置pinia的store
+export const useCounterStore = defineStore('counter', () => {
+  // 通过ref/reactive定义state
+  const count = ref(0)
+  const user = reactive<IUser>({name: '张三',age: 18})
+
+  // 通过computed定义getters
+  const doubleCount = computed(() => count.value * 2)
+
+  // 通过methods定义actions
+  const changeCountAndUser = (countNum:number)=>{
+    setTimeout(() => {
+      count.value = countNum
+      user.age = 28
+      user.name = '李四'
+    }, 1000);
+  }
+  
+  // 通过return将数据、计算属性、方法向外暴漏
+  return { count,user,doubleCount, changeCountAndUser }
+ }
+)
+
+
+// 基于options选项式配置pinia的store
+// import {defineStore} from 'pinia'
+// export const useCounterStore = defineStore('counter',{
+//   state (){
+//     return {
+//       count: 0,
+//       user: {
+//         name: '张三',
+//         age: 18
+//       }
+//     }
+//   },
+//   getters: {
+//     doubleCount():number{
+//       return this.count * 2
+//     }
+//   },
+//   actions: {
+//     changeCountAndUser (count:number){
+//       setTimeout(() => {
+//         this.count = count
+//         this.user.age = 28
+//         this.user.name = '李四'
+//       }, 1000);
+//     }
+//   }
+// })
+```
+
+
+
+test.vue
+
+```vue
+<template>
+  <div>
+    <h1>直接获取couterStore的状态--- {{ count }}</h1>
+    <h1>获取couterStore的状态 --- {{ user }}</h1>
+    <h1>获取counterStore的getters -- {{ doubleCount }}</h1>
+    <button @click="count=200">直接更改状态</button>
+    <button @click="updateState">批量更改状态</button>
+    <button @click="counterStore.$reset()">重置状态</button>
+    <div style="height: 1000px;"></div>
+  </div>
+</template>
+
+<script lang='ts' setup>  
+  import {storeToRefs} from 'pinia'
+  import { useCounterStore } from '@/store/counter'
+  const counterStore = useCounterStore()
+  const {changeCountAndUser} = counterStore // 解构出来更改数据的action方法
+
+  // const {count,user,doubleCount} = counterStore // 解构出来的如果是基本类型，失去响应式。
+  const {count,user,doubleCount} = storeToRefs(counterStore) // 解构出来的都是objectRefImpl对象
+
+
+
+  // 批量修改的方法
+  const updateState = ()=>{
+    // count.value = 100
+    // user.value.age = 28
+
+    // counterStore.count = 100
+    // counterStore.user.age = 28
+
+    // 批量更改状态的两种方式-$patch
+    // counterStore.$patch({
+    //   count: 100,
+    //   user: {
+    //     age: 28
+    //   }
+    // })
+    // counterStore.$patch(state=>{
+    //   state.count = 100
+    //   state.user.age = 28
+    // })
+
+    // 调用action方法
+    // counterStore.changeCountAndUser(100)
+    changeCountAndUser(10000)
+  }
+</script>
+```
+
+
+
+在组合式写法中，如果调用$reset重置，发现会报错：
+
+store/index.ts
+
+```tsx
+// 解决如果setup这种组合式写法中，$reset的问题
+// 报错： Store "counter" is built using the setup syntax and does not implement $reset()
+ store.use(({store})=>{
+   const initialState = JSON.parse(JSON.stringify(store.$state));
+   store.$reset = ()=>{
+     store.$state = JSON.parse(JSON.stringify(initialState));
+   }
+ });
+```
+
+
+
+最后，浏览器刷新的时候，发现数据重置了，需要安装持久化插件解决：
+
+```
+yarn add pinia-plugin-persistedstate
+```
+
+index.ts
+
+```tsx
+import {createPinia} from 'pinia'
+// 引入持久化插件
+import piniaPlugin from 'pinia-plugin-persistedstate'
+const store = createPinia()
+
+  
+// 解决如果setup这种组合式写法中，$reset的问题
+// 报错： Store "counter" is built using the setup syntax and does not implement $reset()
+store.use(({store})=>{
+   const initialState = JSON.parse(JSON.stringify(store.$state));
+   store.$reset = ()=>{
+     store.$state = JSON.parse(JSON.stringify(initialState));
+   }
+});
+
+// 使用持久化插件
+store.use(piniaPlugin)
+export default store
+```
+
+counter.ts
+
+```tsx
+import { ref, computed, reactive} from 'vue'
+import { defineStore } from 'pinia'
+
+interface IUser{
+  name:string
+  age:number
+}
+
+// 基于组合式配置pinia的store
+export const useCounterStore = defineStore('counter', () => {
+  // 通过ref/reactive定义state
+  const count = ref(0)
+  const user = reactive<IUser>({name: '张三',age: 18})
+
+  // 通过computed定义getters
+  const doubleCount = computed(() => count.value * 2)
+
+  // 通过methods定义actions
+  const changeCountAndUser = (countNum:number)=>{
+    setTimeout(() => {
+      count.value = countNum
+      user.age = 28
+      user.name = '李四'
+    }, 1000);
+  }
+  return { count,user,doubleCount, changeCountAndUser }
+},{
+  persist: true  // 对于所有的状态都进行持久化了
+})
+
+
+// 基于options选项式配置pinia的store
+// import {defineStore} from 'pinia'
+// export const useCounterStore = defineStore('counter',{
+//   state (){
+//     return {
+//       count: 0,
+//       user: {
+//         name: '张三',
+//         age: 18
+//       }
+//     }
+//   },
+//   getters: {
+//     doubleCount():number{
+//       return this.count * 2
+//     }
+//   },
+//   actions: {
+//     changeCountAndUser (count:number){
+//       setTimeout(() => {
+//         this.count = count
+//         this.user.age = 28
+//         this.user.name = '李四'
+//       }, 1000);
+//     }
+//   },
+//   persist: true  // 持久化所有数据
+// })
+```
+
+
+
+如果想要对某些状态进行持久化的话，需要：
+
+utils/persist.ts
+
+```tsx
+import type { PersistedStateOptions } from 'pinia-plugin-persistedstate'
+
+/**
+ * @description pinia持久化参数配置
+ * @param {String} key 存储到持久化的 name
+ * @param {Array} paths 需要持久化的 state name
+ * @return persist
+ * */
+const piniaPersistConfig = (key: string, paths?: string[]) => {
+	const persist: PersistedStateOptions = {
+		key,
+		storage: window.localStorage,
+		// storage: window.sessionStorage,
+		paths
+	}
+	return persist
+}
+
+export default piniaPersistConfig
+```
+
+counter.ts
+
+```tsx
+import { ref, computed, reactive} from 'vue'
+import { defineStore } from 'pinia'
+import piniaPersistConfig from '@/utils/persist'
+
+interface IUser{
+  name:string
+  age:number
+}
+
+// 基于组合式配置pinia的store
+export const useCounterStore = defineStore('counter', () => {
+  // 通过ref/reactive定义state
+  const count = ref(0)
+  const user = reactive<IUser>({name: '张三',age: 18})
+
+  // 通过computed定义getters
+  const doubleCount = computed(() => count.value * 2)
+
+  // 通过methods定义actions
+  const changeCountAndUser = (countNum:number)=>{
+    setTimeout(() => {
+      count.value = countNum
+      user.age = 28
+      user.name = '李四'
+    }, 1000);
+  }
+  return { count,user,doubleCount, changeCountAndUser }
+},{
+  // persist: true  // 对于所有的状态都进行持久化了
+  persist: piniaPersistConfig('counter',['count','user.name']) // 对于counter模块的count,user.name进行持久化
+})
+```
+
+
+
+
+
+Pinia使用了Vue 3的Composition API，并利用了Vue 3提供的响应式系统和新特性。它鼓励使用Composition API的方式来组织和访问状态。而Vuex使用基于对象的API风格，使用对象包含state、getters、mutations、actions等来管理和修改状态
+
+在Pinia中，状态被组织成独立的模块，每个模块都有自己的state、getters、actions等。这种模块化的设计使得状态管理更具扩展性和可维护性。Vuex也支持模块化，但在一些方面可能没有Pinia的模块独立性强。
+
+总的来说，Pinia和Vuex都是强大的状态管理库，具有各自的优势和适用场景。Pinia在Vue 3中更紧密地集成了Composition API和类型推断，提供了更好的开发体验和类型安全性。而Vuex是Vue 2的官方状态管理库，有着成熟的生态系统和广泛的应用实践。
+
+
+
+
+
 ## 十八. vue3组合式API
 
 ### 18.1、组合式API
@@ -8663,3 +9003,825 @@ watchEffect((onInvalidate) => {
 </script>
 </html>
 ```
+
+
+
+
+
+
+
+
+
+# TS 基础
+
+## 1 什么是TypeScript
+
+TypeScript是Microsoft公司注册商标。
+
+TypeScript具有类型系统，且是JavaScript的超集。 它可以编译成普通的JavaScript代码。 TypeScript支持任意浏览器，任意环境，任意系统并且是开源的。
+
+## 2 基础类型-入门
+
+### 2.1 布尔值
+
+最基本的数据类型就是简单的`true/false`值，在JavaScript和TypeScript里叫做`boolean`。
+
+```
+let isDone: boolean = false
+```
+
+### 2.2 数字
+
+和JavaScript一样，TypeScript里的所有数字都是浮点数。 这些浮点数的类型是`number`。
+
+```
+let decLiteral: number = 6
+```
+
+### 2.3 字符串
+
+TypeScript像其它语言里一样，使用`string`表示文本数据类型。 和JavaScript一样，可以使用双引号（"）或单引号（'）表示字符串。
+
+```
+let from: string = "千锋教育"
+from = "好程序员"
+```
+
+### 2.4 数组
+
+TypeScript像JavaScript一样可以操作数组元素。 有两种方式可以定义数组。 第一种，可以在元素类型后面接上 `[]`，表示由此类型元素组成的一个数组：
+
+```
+let list: number[] = [1, 2, 3]
+```
+
+第二种方式是使用数组泛型，Array<元素类型>：
+
+```
+let list: Array<number> = [1, 2, 3]
+```
+
+
+
+元祖类型:
+
+```
+const tuple:[number,string] = [1,'1']
+```
+
+
+
+### 2.5 any
+
+有时候，我们会想要为那些在编程阶段还不清楚类型的变量指定一个类型。 这些值可能来自于动态的内容，比如来自用户输入或第三方代码库。 这种情况下，我们不希望类型检查器对这些值进行检查而是直接让它们通过编译阶段的检查。 那么我们可以使用`any`类型来标记这些变量：
+
+```js
+let val: any = 22;
+val = "string value";
+val = new Array();
+val.push(33);
+console.log(val);
+```
+
+
+
+### 2.6 void
+
+某种程度上来说，`void`类型像是与`any`类型相反，它表示没有任何类型。 当一个函数没有返回值时，你通常会见到其返回值类型是 `void`：
+
+```
+function echo(): void {
+  console.log('做真实的自己，用良心做教育')
+}
+```
+
+
+
+### 2.7 never
+
+never类型是其他类型的子类型，代表从来不会出现的值
+
+```
+// 返回值是never的函数可以是抛出异常的情况
+function error():never{
+	throw new Error('xxx')
+}
+
+// 返回值是never的函数可以是无法执行到终点的情况
+function loop():never{
+	while(true){
+		console.log('死循环了...')
+	}
+}
+```
+
+
+
+### 2.8 类型推断
+
+如果没有明确的指定类型，那么 TypeScript 会依照类型推论（Type Inference）的规则推断出一个类型。
+
+#### 什么是类型推断
+
+以下代码虽然没有指定类型，但是会在编译的时候报错：
+
+```
+let lunarDay = '初一'
+lunarDay = 1
+// Type '1' is not assignable to type 'string'.
+```
+
+事实上，它等价于：
+
+```
+let lunarDay: string = '初一'
+lunarDay = 1
+```
+
+### 2.9 联合类型
+
+联合类型（Union Types）表示取值可以为多种类型中的一种。
+
+#### 简单的例子
+
+```
+let lunarDay: string | number
+lunarDay = '初一'
+lunarDay = 1
+```
+
+联合类型使用 | 分隔每个类型。
+
+这里的`let lunarDay: string | number`的含义是，允许 lunarDay 的类型是 string 或者 number，但是不能是其他类型。
+
+#### 访问联合类型的属性或方法
+
+当 TypeScript 不确定一个联合类型的变量到底是哪个类型的时候，我们只能访问此联合类型的所有类型里共有的属性或方法：
+
+```
+function getLength(something: string | number): number {
+  return something.length
+}
+// Property 'length' does not exist on type 'string | number'.
+// Property 'length' does not exist on type 'number'.
+```
+
+上例中，length 不是 string 和 number 的共有属性，所以会报错。 访问 string 和 number 的共有属性是没问题的：
+
+```
+function getString(something: string | number): string {
+  return something.toString()
+}
+```
+
+#### 联合类型赋值的类型推断
+
+联合类型的变量在被赋值的时候，会根据类型推论的规则推断出一个类型：
+
+```
+let lunarDay: string | number
+lunarDay = '初一'
+console.log(lunarDay.length) // 2
+lunarDay = 1
+console.log(lunarDay.length) // 编译时报错
+```
+
+上例中，第二行的 lunarDay 被推断成了 string，访问它的 length 属性不会报错。 而第四行的 lunarDay 被推断成了 number，访问它的 length 属性时就报错了。
+
+### 2.10 类型断言
+
+1.  **断言了解**
+
+TypeScript 允许你覆盖它的推断，毕竟作为开发者你比编译器更了解你写的代码。
+
+类型断言主要用于当 TypeScript 推断出来类型并不满足你的需求，你需要手动指定一个类型。
+
+类型断言有两种方式:
+
+- 使用"尖括号"语法
+
+- 使用`as`语法
+
+2. `as`关键字
+
+使用类型断言（*as关键字*）覆盖其类型推断：
+
+```ts
+let student = {}
+// let student: {}
+
+student.name = 'jack'
+// 类型“{}”上不存在属性“name”。
+student.age = 18
+// 类型“{}”上不存在属性“age”。
+```
+
+TypeScript类型推断变量`student`是一个没有属性的对象, 所以添加对象时会报错
+
+此时就可以定义一个具有`name`,`age`属性的接口,然后通过`as`关键字来进行类型断言
+
+```ts
+// 接口
+interface Person{
+  name:string;
+  age: number
+}
+
+let student = {} as Person
+// let student: Person
+
+student.name = 'jack'
+student.age = 18
+```
+
+此时`student`的 类型使用断言类型, 而不是推断的类型, 因此添加`name`,`age`属性就不会报错
+
+
+
+  3.**?. 与 !.****
+
+?.的意思基本和 && 是一样的
+`a?.b 相当于 a && a.b ? a.b : undefined`
+
+```tsx
+const a = {
+   b: { c: 7 }
+}
+console.log(a?.b?.c);     //7
+console.log(a && a.b && a.b.c);    //7
+```
+
+!.的意思是断言，告诉ts你这个对象里一定有某个值
+
+```tsx
+const inputRef = useRef<HTMLEInputlement>(null);
+// 定义了输入框，初始化是null，但是你在调用他的时候相取输入框的value，这时候dom实例一定是有值的，所以用断言
+const value: string = inputRef.current!.value;
+// 这样就不会报错了
+```
+
+
+
+## 3 函数
+
+### 3.1 函数声明
+
+在 JavaScript 中，有两种常见的定义函数的方式——函数声明（Function Declaration）和函数表达式（Function Expression）：
+
+```js
+// 函数声明（Function Declaration）
+function sum(x, y) {
+  return x + y
+}
+
+// 函数表达式（Function Expression）
+let mySum = function (x, y) {
+  return x + y
+}
+```
+
+一个函数有输入和输出，要在 TypeScript 中对其进行约束，需要把输入和输出都考虑到，其中函数声明的类型定义较简单：
+
+```ts
+function sum(x: number, y: number): number {
+  return x + y
+}
+```
+
+注意，**输入多余的（或者少于要求的）参数，是不被允许的**：
+
+```ts
+function sum(x: number, y: number): number {
+  return x + y
+}
+sum(1, 2, 3)
+
+// Expected 2 arguments, but got 3.
+function sum(x: number, y: number): number {
+  return x + y
+}
+sum(1)
+
+// An argument for 'y' was not provided.
+```
+
+### 3.2 函数表达式
+
+如果要我们现在写一个对函数表达式（Function Expression）的定义，可能会写成这样：
+
+```ts
+let mySum = function (x: number, y: number): number {
+  return x + y
+}
+```
+
+这是可以通过编译的，不过事实上，上面的代码只对等号右侧的匿名函数进行了类型定义，而等号左边的 `mySum`，是通过赋值操作进行类型推论而推断出来的。如果需要我们手动给 `mySum` 添加类型，则应该是这样：
+
+```ts
+let mySum: (x: number, y: number) => number = function (x: number, y: number): number {
+  return x + y
+}
+```
+
+注意不要混淆了 TypeScript 中的 `=>` 和 ES6 中的 `=>`。
+
+在 TypeScript 的类型定义中，`=>` 用来表示函数的定义，左边是输入类型，需要用括号括起来，右边是输出类型。
+
+在 ES6 中，`=>` 叫做箭头函数，应用十分广泛，可以参考 [ES6 中的箭头函数][]。
+
+### 3.3 用接口定义函数的形状
+
+我们也可以使用接口的方式来定义一个函数需要符合的形状：
+
+```ts
+interface SearchFunc {
+  (source: string, subString: string): boolean
+}
+
+let mySearch: SearchFunc
+mySearch = function(source: string, subString: string) {
+  return source.search(subString) !== -1
+}
+```
+
+### 3.4 可选参数
+
+前面提到，输入多余的（或者少于要求的）参数，是不允许的。那么如何定义可选的参数呢？
+
+与接口中的可选属性类似，我们用 `?` 表示可选的参数：
+
+```ts
+function buildName(firstName: string, lastName?: string) {
+  if (lastName) {
+  	return firstName + ' ' + lastName
+  } else {
+  	return firstName
+  }
+}
+let tomcat = buildName('Tom', 'Cat')
+let tom = buildName('Tom')
+```
+
+需要注意的是，可选参数必须接在必需参数后面。换句话说，**可选参数后面不允许再出现必需参数了**：
+
+```ts
+function buildName(firstName?: string, lastName: string) {
+  if (firstName) {
+    return firstName + ' ' + lastName
+  } else {
+    return lastName
+  }
+}
+let tomcat = buildName('Tom', 'Cat')
+let tom = buildName(undefined, 'Tom')
+
+// A required parameter cannot follow an optional parameter.
+```
+
+### 3.5 参数默认值
+
+在 ES6 中，我们允许给函数的参数添加默认值，**TypeScript 会将添加了默认值的参数识别为可选参数**：
+
+```ts
+function buildName(firstName: string, lastName: string = 'Cat') {
+  return firstName + ' ' + lastName
+}
+let tomcat = buildName('Tom', 'Dog')
+let tom = buildName('Tom')
+```
+
+
+
+> 关于默认参数，可以参考 [ES6 中函数参数的默认值][]。
+
+### 3.6 剩余参数
+
+ES6 中，可以使用 `...rest` 的方式获取函数中的剩余参数（rest 参数）：
+
+```js
+function push(array, ...items) {
+  items.forEach(function(item) {
+  	array.push(item)
+  })
+}
+
+let a = []
+push(a, 1, 2, 3)
+```
+
+事实上，`items` 是一个数组。所以我们可以用数组的类型来定义它：
+
+```ts
+function push(array: any[], ...items: any[]) {
+   items.forEach(function(item) {
+   array.push(item)
+  })
+}
+
+let a = []
+push(a, 1, 2, 3)
+```
+
+注意，rest 参数只能是最后一个参数，关于 rest 参数，可以参考 [ES6 中的 rest 参数][]。
+
+## 4 接口
+
+在 TypeScript 中，我们使用接口（Interfaces）来定义对象的类型。
+
+### 4.1 什么是接口
+
+在面向对象语言中，接口（Interfaces）是一个很重要的概念，它是对行为的抽象。 TypeScript 中的接口是一个非常灵活的概念，除了可用于对类的一部分行为进行抽象以外，也常用于对「对象的形状（Shape）」进行描述。
+
+### 4.2 简单的例子
+
+```tsx
+interface Person {
+  name: string
+  age: number
+}
+
+let tom: Person = {
+  name: 'Tom',
+  age: 25
+}
+```
+
+上面的例子中，我们定义了一个接口 `Person`，接着定义了一个变量 `tom`，它的类型是 `Person`。这样，我们就约束了 `tom` 的形状必须和接口 `Person` 一致。 接口一般首字母大写。有的编程语言中会建议接口的名称加上 I 前缀。 定义的变量比接口少了一些属性是不允许的：
+
+```tsx
+interface Person {
+  name: string
+  age: number
+}
+
+let tom: Person = {
+  name: 'Tom'
+}
+// Property 'age' is missing in type '{ name: string }' but required in type 'Person'.
+```
+
+多一些属性也是不允许的：
+
+```tsx
+interface Person {
+  name: string
+  age: number
+}
+
+let tom: Person = {
+  name: 'Tom',
+  age: 25,
+  gender: 'male'
+}
+
+// Type '{ name: string age: number gender: string }' is not assignable to type 'Person'.
+// Object literal may only specify known properties, and 'gender' does not exist in type 'Person'.
+```
+
+可见， *赋值的时候，变量的形状必须和接口的形状保持一致。*
+
+### 4.3 可选属性
+
+有时我们希望不要完全匹配一个形状，那么可以用可选属性：
+
+```tsx
+interface Person {
+  name: string
+  age?: number
+}
+
+let tom: Person = {
+  name: 'Tom'
+}
+
+let john: Person = {
+  name: 'john',
+  age: 25
+}
+```
+
+可选属性的含义是该属性可以不存在。
+
+这时仍然不允许添加未定义的属性：
+
+```tsx
+interface Person {
+  name: string
+  age?: number
+}
+
+let tom: Person = {
+  name: 'Tom',
+  age: 25,
+  gender: 'male'
+}
+
+// Type '{ name: string age: number gender: string }' is not assignable to type 'Person'.
+// Object literal may only specify known properties, and 'gender' does not exist in type 'Person'.
+```
+
+### 4.4 任意属性
+
+有时候我们希望一个接口允许有任意的属性，可以使用如下方式：
+
+```tsx
+interface Person {
+  name: string
+  age?: number
+  [propName: string]: any
+}
+
+let tom: Person = {
+  name: 'Tom',
+  gender: 'male'
+}
+```
+
+### 4.5 只读属性
+
+有时候我们希望对象中的一些字段只能在创建的时候被赋值，那么可以用 `readonly` 定义只读属性：
+
+```tsx
+interface Person {
+  readonly id: number
+  name: string
+  age?: number
+  [propName: string]: any
+}
+
+let tom: Person = {
+  id: 89757,
+  name: 'Tom',
+  gender: 'male'
+}
+
+tom.id = 9527
+// Cannot assign to 'id' because it is a read-only property.
+```
+
+上例中，使用 `readonly` 定义的属性 `id` 初始化后，又被赋值了，所以报错了。
+
+## 5 泛型
+
+泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。
+
+### 5.1 简单的例子
+
+首先，我们来实现一个函数 `createArray`，它可以创建一个指定长度的数组，同时将每一项都填充一个默认值：
+
+```ts
+function createArray(length: number, value: any): Array<any> {
+  let result = []
+  for (let i = 0; i < length; i++) {
+    result[i] = value
+  }
+  return result
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+```
+
+上例中，我们使用了之前提到过的数组泛型来定义返回值的类型。
+
+这段代码编译不会报错，但是一个显而易见的缺陷是，它并没有准确的定义返回值的类型：
+
+`Array<any>` 允许数组的每一项都为任意类型。但是我们预期的是，数组中每一项都应该是输入的 `value` 的类型。
+
+这时候，泛型就派上用场了：
+
+```ts
+function createArray<T>(length: number, value: T): Array<T> {
+  let result: T[] = []
+  for (let i = 0; i < length; i++) {
+    result[i] = value
+  }
+  return result
+}
+
+createArray<string>(3, 'x'); // ['x', 'x', 'x']
+```
+
+上例中，我们在函数名后添加了 `<T>`，其中 `T` 用来指代任意输入的类型，在后面的输入 `value: T` 和输出 `Array<T>` 中即可使用了。
+
+接着在调用的时候，可以指定它具体的类型为 `string`。当然，也可以不手动指定，而让类型推论自动推算出来：
+
+```ts
+function createArray<T>(length: number, value: T): Array<T> {
+  let result: T[] = []
+  for (let i = 0; i < length; i++) {
+    result[i] = value
+  }
+  return result
+}
+
+createArray(3, 'x') // ['x', 'x', 'x']
+```
+
+### 5.2 多个类型参数
+
+定义泛型的时候，可以一次定义多个类型参数：
+
+```ts
+function swap<T, U>(tuple: [T, U]): [U, T] {
+  return [tuple[1], tuple[0]]
+}
+
+swap([7, 'seven']) // ['seven', 7]
+```
+
+上例中，我们定义了一个 `swap` 函数，用来交换输入的元组。
+
+### 5.3 泛型约束
+
+在函数内部使用泛型变量的时候，由于事先不知道它是哪种类型，所以不能随意的操作它的属性或方法：
+
+```ts
+function loggingIdentity<T>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+
+// Property 'length' does not exist on type 'T'.
+```
+
+上例中，泛型 `T` 不一定包含属性 `length`，所以编译的时候报错了。
+
+这时，我们可以对泛型进行约束，只允许这个函数传入那些包含 `length` 属性的变量。这就是泛型约束：
+
+```ts
+interface Lengthwise {
+  length: number
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+```
+
+上例中，我们使用了 `extends` 约束了泛型 `T` 必须符合接口 `Lengthwise` 的形状，也就是必须包含 `length` 属性。
+
+此时如果调用 `loggingIdentity` 的时候，传入的 `arg` 不包含 `length`，那么在编译阶段就会报错了：
+
+```ts
+interface Lengthwise {
+  length: number
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+
+loggingIdentity(7)
+
+// Argument of type '7' is not assignable to parameter of type 'Lengthwise'.
+```
+
+
+
+## 6 ts常用的工具api
+
+### Record
+
+如果要定义一个对象的 key 和 value 类型该怎么做呢？这时候就需要用到 TS 的 Record 了
+
+```
+interface PageInfo {
+  title: string;
+}
+type Page = 'home' | 'about' | 'contact';
+const nav: Record<Page, PageInfo> = { // 对象的key取值只能是Page的某一个，value取值符合PageInfo
+  home: { title: 'home' },
+  about: { title: 'about' },
+  contact: { title: 'contact' },
+};
+```
+
+
+
+```
+// 比如我需要一个对象，有 ABC 三个属性，属性的值必须是数字，那么就这么写：
+type keys = 'A' | 'B' | 'C'
+const result: Record<keys, number> = {
+  A: 1,
+  B: 2,
+  C: 3
+}
+```
+
+
+
+### Partial
+
+Partial<T>的作用就是将某个类型中的属性全部变为可选项
+
+```
+interface Person {
+  name:string;
+  age:number;
+}
+function student<T extends Person>(arg: Partial<T>):Partial<T> {
+  return arg;
+}
+student({
+  name: '19',
+})
+```
+
+
+
+```
+interface User{
+  id:number
+  name:string
+  age:number
+}
+
+// 现在Form拥有User里面的所有字段，但是全是可选的
+type Form = Partial<User>
+```
+
+
+
+### Required
+
+```
+interface User{
+  id:number
+  name?:string
+  age?:number
+}
+
+// 现在Form拥有User里面的所有字段，但是全部变为必填字段
+type Form = Required<User>
+```
+
+
+
+### Readonly
+
+```
+interface User{
+  id:number
+  name:string
+  age:number
+}
+// 接口全部字段变为只读类型
+type Form = Readonly<User>
+const zhangsan: Form = {
+  id: 1,
+  name: '张三',
+  age: 18
+}
+// 报错
+zhangsan.name = '李四'
+```
+
+
+
+### Pick<T, K> 
+
+ Pick<T, K> 可以方便地从一个类型中选择需要的属性，生成一个新的类型，这个新类型只包含我们需要的属性。
+
+与直接定义一个新的接口相比，使用 Pick<T, K> 的好处是可以复用现有的接口定义，减少代码冗余，同时也可以更加清晰地表达出代码的意图。
+
+```
+interface User{
+  id:number
+  name:string
+  age:number
+}
+
+// 此时From中就只有name、age字段
+type Form = Pick<User, 'name' | 'age'>
+const zhangsan:Form = {
+  name:'xxx',
+  age:18
+}
+```
+
+
+
+### Omit<T, K>
+
+使用 Omit<T, K> 可以方便地从一个类型中删除不需要的属性，生成一个新的类型，这个新类型只包含我们需要的属性。
+
+```
+interface User{
+  id:number
+  name:string
+  age:number
+}
+
+// 排除接口中哪些字段，此时From中就只有id字段
+type Form = Omit<User, 'name' | 'age'>
+const zhangsan:Form = {
+  id:1
+}
+```
+
+
+
+
+

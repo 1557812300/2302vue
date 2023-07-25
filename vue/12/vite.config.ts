@@ -12,5 +12,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/db': {
+        target: 'http://47.96.0.211:9000'
+      }
+    }
   }
 })

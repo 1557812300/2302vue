@@ -1,34 +1,55 @@
 
 <template>
   <div>
-    <button @click="count=1">点击了{{ count }}次</button>
-    <button @click="stop">停止监听</button>
-    <hr/>
-    <button @click="id=1">请求第一条数据</button>
-    <button @click="id=2">请求第二条数据</button>
-    {{ id }}
+    <h2>{{ x }} - {{ y }}</h2>
+    <ul>
+      <li v-for="item in data2" :key="item.id">
+        <h4>{{ item.title }}</h4>
+      </li>
+    </ul>
   </div>
 </template>
 
   
 <script lang="ts" setup>
-  import {ref, watchEffect} from 'vue'
-  const count = ref(0)
-  const stop = watchEffect(()=>{
-    // console.log('监听的count次数为:'+count.value)
-  })
+  import {ref, unref, watchEffect} from 'vue'
+  import useMouse from '@/hooks/useMouse'
+  const {x,y} = useMouse()
 
-  const id = ref(1)
-  watchEffect((onCleanup)=>{
-    console.log('------',id.value)
-    const timer = setTimeout(() => {
-      console.log(`请求第${id.value}条数据...`)
-    }, 2000);
-    onCleanup(()=>{ // 当id改变的时候，就会执行这个回调函数，可以清除上一次的timer
-      // console.log('清除定时器....')
-      clearTimeout(timer)
+  // 请求数据
+  interface Item{
+    id:string
+    title:string
+    [key:string]:any
+  }
+  // const data = ref<Array<Item>>([])
+
+  // fetch第一个then里面获取不到数据，只能拿到请求的相关状态 
+  // 在第二个then的回调中才可以获取数据
+  function useFetch (url:any) {
+    const data = ref<Array<any>>([])
+    watchEffect(()=>{
+      fetch(unref(url)) // url.value
+      .then((res) => res.json() )
+      .then((res) => {
+        data.value = res.object_list
+      })
     })
-  })
+    return {
+      data
+    }
+  }
+
+  let urlRef = ref('/db/in_theaters?limit=5')
+  setTimeout(() => {
+    urlRef.value = '/db/in_theaters?limit=10'
+  }, 3000);
+  const {data: data2} = useFetch(urlRef)
+
+
+  
+
+  
 </script>
 
 

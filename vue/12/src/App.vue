@@ -12,7 +12,7 @@
 
   
 <script lang="ts" setup>
-  import {ref, unref, watchEffect} from 'vue'
+  import {ref, unref, watch, watchEffect} from 'vue'
   import useMouse from '@/hooks/useMouse'
   const {x,y} = useMouse()
 
@@ -35,10 +35,20 @@
         data.value = res.object_list
       })
     })
-    return {
-      data
-    }
-  }
+
+    // 也可以采用下面的方案实现
+  //   watch(url,(val:any)=>{
+  //     fetch(val) 
+  //     .then((res) => res.json() )
+  //     .then((res) => {
+  //       data.value = res.object_list
+  //     })
+  //   },{immediate: true})
+
+  //   return {
+  //     data
+  //   }
+  // }
 
   let urlRef = ref('/db/in_theaters?limit=5')
   setTimeout(() => {

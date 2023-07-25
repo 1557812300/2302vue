@@ -22,9 +22,9 @@ export default function useCount (num:number) {
   // })
 
   // 如果要监听reactive对象里面的属性的变化，需要写成getter函数的形式
-  const stop = watch(()=>userInfo.age,(newValue,oldValue)=>{
-    console.log(newValue,oldValue)
-  })
+  // const stop = watch(()=>userInfo.age,(newValue,oldValue)=>{
+  //   console.log(newValue,oldValue)
+  // })
 
   // 当使用 getter 函数作为源时，回调只在此函数的返回值变化时才会触发。
   // watch(()=>userInfo,(newValue,oldValue)=>{

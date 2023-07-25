@@ -45,9 +45,9 @@
   //     })
   //   },{immediate: true})
 
-  //   return {
-  //     data
-  //   }
+    return {
+      data
+    }
   // }
 
   let urlRef = ref('/db/in_theaters?limit=5')

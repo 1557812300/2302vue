@@ -48,7 +48,7 @@
     return {
       data
     }
-  // }
+  }
 
   let urlRef = ref('/db/in_theaters?limit=5')
   setTimeout(() => {
